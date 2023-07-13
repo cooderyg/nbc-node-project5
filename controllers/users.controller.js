@@ -4,46 +4,62 @@ class UsersController {
   usersService = new UsersService();
 
   signUp = async (req, res) => {
-    const {
-      email,
-      password, //
-      confirmPassword,
-      nickname,
-      name,
-      age,
-      gender,
-      profileImage,
-    } = req.body;
+    try {
+      const {
+        email,
+        password, //
+        nickname,
+        name,
+        age,
+        gender,
+        profileImage,
+      } = req.body;
 
-    const { code, data } = await this.usersService.signUp({
-      email,
-      password,
-      confirmPassword,
-      nickname,
-      name,
-      age,
-      gender,
-      profileImage,
-    });
+      const data = await this.usersService.signUp({
+        email,
+        password,
+        nickname,
+        name,
+        age,
+        gender,
+        profileImage,
+      });
 
-    res.status(code).json({ data });
+      res.status(200).json({ data });
+    } catch (error) {
+      const { status, message } = error;
+      if (!status) res.status(500).json({ message: '에러가 발생했습니다.' });
+      res.status(status).json({ message });
+    }
   };
 
   login = async (req, res) => {
-    const { email, password } = req.body;
-    const { code, data, token } = await this.usersService.login({
-      email,
-      password,
-    });
-    token ? res.cookie('authorization', `Bearer ${token}`) : null;
-    res.status(code).json({ data });
+    try {
+      const { email, password } = req.body;
+      const { data, token } = await this.usersService.login({
+        email,
+        password,
+      });
+      res.cookie('authorization', `Bearer ${token}`);
+      res.status(200).json({ data });
+    } catch (error) {
+      const { status, message } = error;
+      if (!status) res.status(500).json({ message: '에러가 발생했습니다.' });
+      res.status(status).json({ message });
+    }
   };
 
   findUserById = async (req, res) => {
-    const { userId } = res.locals.user;
+    try {
+      const { userId } = res.locals.user;
 
-    const { code, data } = await this.usersService.findUserById({ userId });
-    res.status(code).json({ data });
+      const data = await this.usersService.findUserById({ userId });
+      res.status(200).json({ data });
+    } catch (error) {
+      const { status, message } = error;
+      if (!status) res.status(500).json({ message: '에러가 발생했습니다.' });
+      res.status(status).json({ message });
+    }
   };
 }
 
