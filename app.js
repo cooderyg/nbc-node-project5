@@ -16,7 +16,6 @@ app.use(logErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
 function logErrors(err, req, res, next) {
-  console.error(err.stack);
   next(err);
 }
 function clientErrorHandler(err, req, res, next) {
