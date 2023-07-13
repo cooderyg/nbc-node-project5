@@ -4,34 +4,18 @@ class LikesService {
   likesRepository = new LikesRepository();
 
   toggleLike = async ({ userId, postId }) => {
-    let isExisted;
-    try {
-      isExisted = await this.likesRepository.findLike({ userId, postId });
-    } catch (error) {
-      return { code: 500, data: error.message };
-    }
+    const isExisted = await this.likesRepository.findLike({ userId, postId });
 
     if (isExisted) {
-      try {
-        await this.likesRepository.deletLike({ userId, postId });
-
-        await this.likesRepository.decrementLikeCount({ postId });
-
-        return { code: 200, data: { isLiked: false } };
-      } catch (error) {
-        return { code: 500, data: error.message };
-      }
+      await this.likesRepository.deletLike({ userId, postId });
+      await this.likesRepository.decrementLikeCount({ postId });
+      return false;
     }
 
-    try {
-      await this.likesRepository.creatLike({ userId, postId });
+    await this.likesRepository.creatLike({ userId, postId });
+    await this.likesRepository.incrementLikeCount({ postId });
 
-      await this.likesRepository.incrementLikeCount({ postId });
-
-      return { code: 200, data: { isLiked: true } };
-    } catch (error) {
-      return { code: 500, data: error.message };
-    }
+    return true;
   };
 }
 

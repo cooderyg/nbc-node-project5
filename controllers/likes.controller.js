@@ -7,12 +7,15 @@ class LikesController {
     const { userId } = res.locals.user;
     const { postId } = req.params;
 
-    const { code, data } = await this.likesService.toggleLike({
-      userId,
-      postId,
-    });
-
-    res.status(code).json({ data });
+    try {
+      const isLiked = await this.likesService.toggleLike({
+        userId,
+        postId,
+      });
+      res.status(200).json({ data: { isLiked } });
+    } catch (error) {
+      res.status(500).json({ message: '에러가 발생했습니다.' });
+    }
   };
 }
 
